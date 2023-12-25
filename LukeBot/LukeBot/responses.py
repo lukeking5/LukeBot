@@ -1,11 +1,9 @@
 import random
-import time
 import media
+import textGames
 
-random.seed(time.time())
-
-def get_response(message: str) -> str:
-    p_message = message.lower()
+def get_response(message, user_message: str) -> str:
+    p_message = user_message.lower()
     
     if p_message == "help": # Help
         return "Here are some useful '*' Commands:\n",
@@ -19,6 +17,9 @@ def get_response(message: str) -> str:
     if p_message == "rtd": # Roll The Dice
         return str(random.randint(1,6))
 
-    if p_message[:4] == 'gif ': # Receive a GIF
+    if p_message[:4] == "gif ": # Receive a GIF
         return media.getGIF(p_message[4:])
+    
+    if p_message == "typerace":
+        textGames.typeRace(message.channel, message.author)
     return "I don't understand what you said. Try typing \"help!\"." # Bad Input
