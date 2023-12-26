@@ -23,10 +23,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="bot.py" />
+    <Compile Include="cogs\CoreCommands.py" />
     <Compile Include="main.py" />
-    <Compile Include="media.py" />
+    <Compile Include="cogs\Media.py" />
     <Compile Include="responses.py" />
-    <Compile Include="textGames.py" />
+    <Compile Include="cogs\TextGames.py" />
   </ItemGroup>
   <ItemGroup>
     <Interpreter Include="env\">
@@ -41,9 +42,17 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="assets\" />
+    <Folder Include="cogs\" />
+    <Folder Include="assets\dice\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="assets\typing_prompts.txt" />
+    <Content Include="assets\dice\DIE_01.png" />
+    <Content Include="assets\dice\DIE_02.png" />
+    <Content Include="assets\dice\DIE_03.png" />
+    <Content Include="assets\dice\DIE_04.png" />
+    <Content Include="assets\dice\DIE_05.png" />
+    <Content Include="assets\dice\DIE_06.png" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in

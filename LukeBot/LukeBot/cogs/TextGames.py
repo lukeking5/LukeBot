@@ -22,8 +22,8 @@ class TextGames(commands.Cog):
                     userSet.remove(user_message.author)
 
                 elif user_message.author != ctx.author: # if user is not author and types race
-                    await ctx.send(f"User {user_message.author} added to race.")
-                    userSet.add(bot.user_message.author)
+                    await ctx.send(f"User {user_message.author.mention} added to race.")
+                    userSet.add(user_message.author)
             
             if user_message_content == "cancel": # if typerace initiator types *cancel, race is canceled. return to end function
                 await ctx.send("Race Cancelled.")
@@ -43,7 +43,7 @@ class TextGames(commands.Cog):
                 await ctx.send(str(i) + "...")
             time.sleep(1)
             
-        await ctx.send(typingPrompt + str(len(typingPrompt)))
+        await ctx.send(typingPrompt)
         
         init_time = time.time() # Used to track
         stopwatch = time.time()   # time passed in race
@@ -54,7 +54,8 @@ class TextGames(commands.Cog):
             user_message_content = str(user_message.content)
             
             if user_message_content == "end": # end race early
-                return
+                await ctx.send(f"{user_message.author.mention} has ended the race early.")
+                break
             
             if user_message_content == typingPrompt and user_message.author in userSet: # user types prompt correctly
                 await ctx.send(f"{user_message.author.mention} has finished!")

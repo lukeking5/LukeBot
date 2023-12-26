@@ -1,6 +1,9 @@
 import discord
 import responses
-
+from cogs.CoreCommands import CoreCommands
+from cogs.Media import Media
+from cogs.TextGames import TextGames
+from discord.ext import commands, tasks
 
 async def send_message(message, user_message, is_private):
     try:
@@ -15,16 +18,19 @@ def run_discord_bot():
     TOKEN = 'MTE4ODY5NjAwMjQ3NjEyNjI5MA.GF2pxU.dR0zV9oJhV56f9gnZ_Ze5geRphWWqQpSSrTKBs'
     intents = discord.Intents.default()
     intents.message_content = True
-    client = discord.Client(intents=intents)
+    bot = commands.Bot(command_prefix="*", intents=intents, help_command=None, case_insensitive=True)
     
-    @client.event
+    
+    @bot.event
     async def on_ready():
-        print(f'{client.user} is now running!')
+        await bot.add_cog(CoreCommands(bot))
+        await bot.add_cog(TextGames(bot))
+        await bot.add_cog(Media(bot))
+        print(f'{bot.user} is now running!')
     
-
-    @client.event # HANDLES USER MESSAGES
+    '''@bot.event # HANDLES USER MESSAGES
     async def on_message(message):
-        if message.author == client.user: # prevents bot from responding to intself
+        if message.author == bot.user: # prevents bot from responding to intself
             return
         
         if len(str(message.content)) < 1: # prevents bot from crashing when someone joins server (0 length message)
@@ -43,7 +49,7 @@ def run_discord_bot():
             if user_message.lower() == "help": # help gives private commands
                 await send_message(message, user_message, is_private=True)
             else:
-                await send_message(message, user_message, is_private=False)
+                await send_message(message, user_message, is_private=False)'''
             
         
-    client.run(TOKEN)
+    bot.run(TOKEN)
