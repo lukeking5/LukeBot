@@ -42,6 +42,7 @@ class CoreCommands(commands.Cog):
                        f"MST: {datetime.now(pytz.timezone("America/Denver")).strftime("%Y-%m-%d %I:%M:%S %p")}\n"
                        f"CST: {datetime.now(pytz.timezone("America/Chicago")).strftime("%Y-%m-%d %I:%M:%S %p")}\n"
                        f"EST: {datetime.now(pytz.timezone("America/New_York")).strftime("%Y-%m-%d %I:%M:%S %p")}\n")
+        
     @commands.command()
     async def rtd(self, ctx):
         await ctx.send(file=discord.File(f'assets/dice/DIE_0{random.randint(1,6)}.png'))

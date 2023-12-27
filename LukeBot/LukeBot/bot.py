@@ -1,18 +1,11 @@
 import discord
-import responses
+from discord.ext import commands, tasks
+
 from cogs.CoreCommands import CoreCommands
 from cogs.Media import Media
 from cogs.TextGames import TextGames
-from discord.ext import commands, tasks
+from cogs.music import music
 
-async def send_message(message, user_message, is_private):
-    try:
-        response = responses.get_response(message, user_message)
-        await message.author.send(response) if is_private else await message.channel.send(response)
-    
-    except Exception as e:
-        print(e)
-        
 
 def run_discord_bot():
     TOKEN = 'MTE4ODY5NjAwMjQ3NjEyNjI5MA.GF2pxU.dR0zV9oJhV56f9gnZ_Ze5geRphWWqQpSSrTKBs'
@@ -26,6 +19,7 @@ def run_discord_bot():
         await bot.add_cog(CoreCommands(bot))
         await bot.add_cog(TextGames(bot))
         await bot.add_cog(Media(bot))
+        await bot.add_cog(music(bot))
         print(f'{bot.user} is now running!')
     
     '''@bot.event # HANDLES USER MESSAGES

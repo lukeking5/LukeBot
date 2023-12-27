@@ -24,9 +24,9 @@
   <ItemGroup>
     <Compile Include="bot.py" />
     <Compile Include="cogs\CoreCommands.py" />
+    <Compile Include="cogs\music.py" />
     <Compile Include="main.py" />
     <Compile Include="cogs\Media.py" />
-    <Compile Include="responses.py" />
     <Compile Include="cogs\TextGames.py" />
   </ItemGroup>
   <ItemGroup>
@@ -42,6 +42,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="assets\" />
+    <Folder Include="assets\wordle\" />
+    <Folder Include="assets\wordle\grids\" />
     <Folder Include="cogs\" />
     <Folder Include="assets\dice\" />
   </ItemGroup>
@@ -53,6 +55,12 @@
     <Content Include="assets\dice\DIE_04.png" />
     <Content Include="assets\dice\DIE_05.png" />
     <Content Include="assets\dice\DIE_06.png" />
+    <Content Include="assets\wordle\BlackSquare.png" />
+    <Content Include="assets\wordle\ColorAbsent.png" />
+    <Content Include="assets\wordle\EmptySquare.png" />
+    <Content Include="assets\wordle\GreenSquare.png" />
+    <Content Include="assets\wordle\YellowSquare.png" />
+    <Content Include="assets\wordlist10000.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
