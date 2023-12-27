@@ -98,11 +98,13 @@ class TextGames(commands.Cog):
                             tempWord = tempWord.replace(char, '', 1)
                             grid.paste(Image.open('assets/wordle/GreenSquare.png'), (j*100, i*100))
                             textPlane.text((j*100 + 25, i*100 + 25), str(char).upper(), (0,0,0), font=font)
-                    print(tempWord)
                     for j, char in enumerate(guesses[i]): #yellow letters
                         if char in tempWord and char != word[j]: # incorrect but in word = yellow
                             tempWord = tempWord.replace(char, '', 1)
                             grid.paste(Image.open('assets/wordle/YellowSquare.png'), (j*100, i*100))
+                            textPlane.text((j*100 + 25, i*100 + 25), str(char).upper(), (0,0,0), font=font)
+                        elif char in word and char != word[j] and char not in tempWord: #if green/yellow exhausted of that char, should be gray
+                            grid.paste(Image.open('assets/wordle/ColorAbsent.png'), (j*100, i*100))
                             textPlane.text((j*100 + 25, i*100 + 25), str(char).upper(), (0,0,0), font=font)
                     for j, char in enumerate(guesses[i]):
                         if char not in word:    
@@ -144,11 +146,10 @@ class TextGames(commands.Cog):
         ans_word = random.choice(list(randWords)) # 5-letter 'answer' word
         randWords.remove(ans_word) # remove answer from random words
         
-        # so i can always cheat if i want. mwuahahaha
-        print(randWords)
-        print(ans_word)
+        #print(ans_word) so i can always cheat if i want. mwuahahaha
         
         guessList = [] # list of guesses
+        flag = False # flag for correct user guess
         
         for i in range(1,7): # loop through six guesses
             try:
@@ -164,9 +165,11 @@ class TextGames(commands.Cog):
             await update.edit(embed=wordle_embed, attachments=[gridFile]) # update embed (grid image has changed)
             if guess == ans_word: # WIN CASE
                 await ctx.send(f"Congratulations! {ctx.author.mention} won wordle! The word was: {ans_word}. Guesses taken: {len(guessList)}")
-                return
+                flag = True
+                break
             
-        await ctx.send(f"{ctx.author.mention} has failed wordle. The word was: {ans_word}")
+        if flag == False:
+            await ctx.send(f"{ctx.author.mention} has failed wordle. The word was: {ans_word}")
         
         os.remove('assets/wordle/grid.png') # delete generated grid image
                 

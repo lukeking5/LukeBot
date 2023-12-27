@@ -8,7 +8,13 @@ from cogs.music import music
 
 
 def run_discord_bot():
-    TOKEN = 'MTE4ODY5NjAwMjQ3NjEyNjI5MA.GF2pxU.dR0zV9oJhV56f9gnZ_Ze5geRphWWqQpSSrTKBs'
+    # TOKEN
+    token_file = open("C:/Users/schwa/Desktop/discBot/TOKEN.txt", 'r')
+    token_txt = token_file.read()
+    TOKEN = token_txt
+    token_file.close()
+    
+
     intents = discord.Intents.default()
     intents.message_content = True
     bot = commands.Bot(command_prefix="*", intents=intents, help_command=None, case_insensitive=True)

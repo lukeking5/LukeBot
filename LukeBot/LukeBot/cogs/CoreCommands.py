@@ -33,7 +33,8 @@ class CoreCommands(commands.Cog):
         "GIF YourTextHere: Receive a random gif with your own prompt!\n"
         "KISS @member: Kiss another member of the server!\n"
         "PUNCH @member: Punch another member of the server!\n"
-        "TypeRace: Begin a typing race!\n")
+        "TypeRace: Begin a typing race!\n"
+        "Wordle: Play wordle!\n")
         await ctx.send("Check your DM's for a comprehensive help section.")
         
     @commands.command()
