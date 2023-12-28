@@ -1,7 +1,7 @@
 import random
 import time
-from selenium import webdriver
-from selenium.webdriver.common.by import By
+import requests
+from bs4 import BeautifulSoup
 from discord.ext import commands
 
 random.seed(time.time())
@@ -13,13 +13,21 @@ class Media(commands.Cog):
     @commands.command()
     async def gif(self, ctx, *, arg): # Function for grabbing random gif given string
         arg = arg.replace(' ', '-') # spaces become %20 in image search. ############### LATER SHOULD IMPLEMENT MORE SUCH AS '+' ##############
-    
-        driver = webdriver.Chrome()
-        driver.get("https://tenor.com/search/" + arg + "-gifs") # tenor page based on input
-        time.sleep(1.5) # wait to ensure all gifs load
-        links = [f"{img.get_attribute('src')}" for img in driver.find_elements(By.XPATH, "//div[@class='Gif']//img[@src]")] # grabs all gif links on first page of imgur search
-        driver.quit()
-        await ctx.send(random.choice(links))
-
+        gifLinks = []
+        #content of search URL
+        response = requests.get("https://tenor.com/search/" + arg + "-gifs")
+        soup = BeautifulSoup(response.text, "html.parser")
+        gifDiv = soup.find_all(class_="Gif")
+        
+        # grab img src from div
+        for item in gifDiv:
+            for img in item.find_all("img"):
+                gifLinks.append(img["src"])
+        
+        if not gifLinks:
+            await ctx.send("No GIFs found with given search critera.")
+        else:
+            await ctx.send(random.choice(gifLinks))
+        
 async def setup(bot):
     await bot.add_cog(Media(bot))

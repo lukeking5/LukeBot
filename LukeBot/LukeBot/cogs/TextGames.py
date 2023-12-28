@@ -43,7 +43,7 @@ class TextGames(commands.Cog):
         typingFile.close() # close file
         
         for i in range(5, 0, -1): #Countdown
-            if i == 3:
+            if i == 5:
                 await ctx.send("Prompt in 5...")
             else:
                 await ctx.send(str(i) + "...")
@@ -149,26 +149,34 @@ class TextGames(commands.Cog):
         #print(ans_word) so i can always cheat if i want. mwuahahaha
         
         guessList = [] # list of guesses
-        flag = False # flag for correct user guess
+
+        flagGuess = False # flag for correct user guess
         
         for i in range(1,7): # loop through six guesses
+            flagTimeLimit = False # time limit flag
+            
             try:
-                user_guess = await self.bot.wait_for("message", timeout=60.0, check = lambda mess: mess.author == ctx.author and len(mess.content) == 5)
+                user_guess = await self.bot.wait_for("message", timeout=120.0, check = lambda mess: mess.author == ctx.author and len(mess.content) == 5)
             except asyncio.TimeoutError:
-                await ctx.send(f"Time limit for guess exceeded! {list(randWords)[0]}")
+                await ctx.send(f"Time limit for guess exceeded! Random word {list(randWords)[0]} guessed.")
+                flagTimeLimit = True
+
+            guess = str(user_guess.content).lower() # always should be lowercase
+            if flagTimeLimit == False: # add user guess if user guesses in time
+                guessList.append(guess)
+            else:
+                guessList.append(list(randWords)[0]) # if time limit exceeded, add from randWord
                 randWords.remove(list(randWords)[0])
                 
-            guess = str(user_guess.content).lower() # always should be lowercase
-            guessList.append(guess)
             gridFile = createGrid(guessList, ans_word)
             await update.edit(embed=wordle_embed, attachments=[]) # remove attachment
             await update.edit(embed=wordle_embed, attachments=[gridFile]) # update embed (grid image has changed)
             if guess == ans_word: # WIN CASE
                 await ctx.send(f"Congratulations! {ctx.author.mention} won wordle! The word was: {ans_word}. Guesses taken: {len(guessList)}")
-                flag = True
+                flagGuess = True
                 break
             
-        if flag == False:
+        if flagGuess == False:
             await ctx.send(f"{ctx.author.mention} has failed wordle. The word was: {ans_word}")
         
         os.remove('assets/wordle/grid.png') # delete generated grid image
