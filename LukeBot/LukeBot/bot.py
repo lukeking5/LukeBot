@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands, tasks
-
+from discord import app_commands
 from cogs.CoreCommands import CoreCommands
 from cogs.Media import Media
 from cogs.TextGames import TextGames
@@ -17,7 +17,7 @@ def run_discord_bot():
 
     intents = discord.Intents.default()
     intents.message_content = True
-    bot = commands.Bot(command_prefix="*", intents=intents, help_command=None, case_insensitive=True)
+    bot = commands.Bot(command_prefix="*", intents=intents, case_insensitive=True)
     
     
     @bot.event
@@ -27,7 +27,10 @@ def run_discord_bot():
         await bot.add_cog(Media(bot))
         await bot.add_cog(music(bot))
         print(f'{bot.user} is now running!')
-    
+        
+        synced = await bot.tree.sync()
+        print(f"Synced {len(synced)} command(s)")
+
     '''@bot.event # HANDLES USER MESSAGES
     async def on_message(message):
         if message.author == bot.user: # prevents bot from responding to intself

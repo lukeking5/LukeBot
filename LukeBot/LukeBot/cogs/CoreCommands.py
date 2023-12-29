@@ -1,4 +1,5 @@
 import discord
+from discord import app_commands
 from discord.ext import commands
 import random
 import time
@@ -10,42 +11,34 @@ class CoreCommands(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         
-    @commands.command()
+    @commands.hybrid_command(name="hello", description="Hey there!")
     async def hello(self, ctx):
-        await ctx.send(f"Hey There, {ctx.author.mention}!")
+        """Hey there!"""
+        await ctx.send(f"Hey there, {ctx.author.mention}!")
         
-    @commands.command() # kiss someone!
+    @commands.hybrid_command(name="kiss", description="Kiss someone!")
     async def kiss(self, ctx, user: discord.Member): # Kiss another member!
+        """Kiss someone!"""
         await ctx.send(f"{ctx.author.mention} kisses {user.mention}!")
         await ctx.send("https://media1.tenor.com/m/bD7CkL3ACK4AAAAd/good-morning.gif")
         
-    @commands.command() # punch someone!
+    @commands.hybrid_command(name = "punch", description="Punch someone!")
     async def punch(self, ctx, user: discord.Member): # Punch another member!
+        """Punch someone!"""
         await ctx.send(f"{ctx.author.mention} punches {user.mention}!")
         await ctx.send("https://media1.tenor.com/m/jwGSFHGRyFUAAAAC/boxing-tom-and-jerry.gif")
         
-    @commands.command()
-    async def help(self, ctx): # list of all commands
-        await ctx.author.send("Here are some useful '*' Commands:\n"
-        "Hello: Hey There!\n"
-        "Time: Get current time in U.S. Timezones"
-        "RTD: Rolls a 6 sided die\n"
-        "GIF YourTextHere: Receive a random gif with your own prompt!\n"
-        "KISS @member: Kiss another member of the server!\n"
-        "PUNCH @member: Punch another member of the server!\n"
-        "TypeRace: Begin a typing race!\n"
-        "Wordle: Play wordle!\n")
-        await ctx.send("Check your DM's for a comprehensive help section.")
-        
-    @commands.command()
+    @commands.hybrid_command(name="time", description="Get the time in U.S. time zones.")
     async def time(self, ctx):
+        """Get the time in U.S. time zones."""
         await ctx.send(f"PST: {datetime.now(pytz.timezone("America/Los_Angeles")).strftime("%Y-%m-%d %I:%M:%S %p")}\n"
                        f"MST: {datetime.now(pytz.timezone("America/Denver")).strftime("%Y-%m-%d %I:%M:%S %p")}\n"
                        f"CST: {datetime.now(pytz.timezone("America/Chicago")).strftime("%Y-%m-%d %I:%M:%S %p")}\n"
                        f"EST: {datetime.now(pytz.timezone("America/New_York")).strftime("%Y-%m-%d %I:%M:%S %p")}\n")
         
-    @commands.command()
+    @commands.hybrid_command(name="rtd", description="Roll the dice.")
     async def rtd(self, ctx):
+        """Roll the dice."""    
         await ctx.send(file=discord.File(f'assets/dice/DIE_0{random.randint(1,6)}.png'))
 
 async def setup(bot):
