@@ -1,5 +1,6 @@
 import bot
 import discord
+from discord import app_commands
 from discord.ext import commands
 import random
 import time
@@ -14,8 +15,9 @@ class TextGames(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
     
-    @commands.command()
+    @commands.hybrid_command(name="typerace", description="Create a type racer lobby.")
     async def typeRace(self, ctx): ############ TIME NOT IMPLEMENTED FULLY YET. BOT.WAIT_FOR() PREVENTS TIME FROM INCREMENTING, AS IT WAITS FOR USER INPUT ##################
+        """Create a TypeRacer lobby."""
         await ctx.send(f"Please type 'race' to join/leave race. {ctx.author.mention} may begin the race by typing 'start' or cancel by typing 'cancel'")
         userSet = {ctx.author} # set of users currently ready to race
         while(True):
@@ -84,9 +86,13 @@ class TextGames(commands.Cog):
                for user in userSet:
                    await ctx.send(f"{user.mention} did not finish.")
                    
-    @commands.command()
+    @commands.hybrid_command(name="wordle",description="Create a wordle game.")
     async def wordle(self, ctx): 
-        def createGrid(guesses=[], word=''): # creates and fills grid based on list of user guesses
+        """Create a wordle game."""
+        def createGrid(guesses=None, word=''): # creates and fills grid based on list of user guesses
+            if guesses is None:
+                guesses = []
+                
             grid = Image.new('RGB', (500,600), color=(207, 207, 207)) # create image background
             textPlane = ImageDraw.Draw(grid) # plane for characters to be drawn on
             font = ImageFont.truetype("arial.ttf", 60)
@@ -169,7 +175,6 @@ class TextGames(commands.Cog):
                 randWords.remove(list(randWords)[0])
                 
             gridFile = createGrid(guessList, ans_word)
-            await update.edit(embed=wordle_embed, attachments=[]) # remove attachment
             await update.edit(embed=wordle_embed, attachments=[gridFile]) # update embed (grid image has changed)
             if guess == ans_word: # WIN CASE
                 await ctx.send(f"Congratulations! {ctx.author.mention} won wordle! The word was: {ans_word}. Guesses taken: {len(guessList)}")
