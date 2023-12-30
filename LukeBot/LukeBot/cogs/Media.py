@@ -1,7 +1,7 @@
 import random
 import time
 import json
-import requests
+import httpx
 from bs4 import BeautifulSoup
 import discord
 from discord.ext import commands
@@ -13,7 +13,7 @@ class Media(commands.Cog):
         self.bot = bot
     
     @commands.hybrid_command(name="gif", description="Receive a random gif based on the prompt.")
-    async def gif(self, ctx, *, arg: str):
+    async def gif(self, ctx, *, arg):
         """Receive a random gif based on the prompt"""
         arg = arg.replace(' ', '-') # spaces become %20 in image search. ############### LATER SHOULD IMPLEMENT MORE SUCH AS '+' ##############
         gifLinks = []
@@ -24,7 +24,7 @@ class Media(commands.Cog):
         apiFile.close()
         
         # grabbing gifs
-        response = requests.get(f"https://tenor.googleapis.com/v2/search?q={arg}&key={apiKey}&limit={50}", timeout=.2) #load first 500 gifs (timeout saved slow loading?)
+        response = httpx.get(f"https://tenor.googleapis.com/v2/search?q={arg}&key={apiKey}&limit={50}") #load first 500 gifs (timeout saved slow loading?)
         if response.status_code == 200:
             top100gifs = json.loads(response.content)
         else:
@@ -52,7 +52,7 @@ class Media(commands.Cog):
         ### USER SEARCHES FOR PLAYER ###
         if '#' in newArg:
             newArg = newArg.replace('#', '-') # '#' changed to '-' in link
-            response = requests.get(f"https://u.gg/lol/profile/na1/{newArg}/overview", headers=headers)
+            response = httpx.get(f"https://u.gg/lol/profile/na1/{newArg}/overview", headers=headers)
             soup = BeautifulSoup(response.text, "html.parser")
             
             try: # grab player data
@@ -90,7 +90,7 @@ class Media(commands.Cog):
         ### USER SEARCHES FOR CHAMP ###
         else:
         #content of search URL
-            response = requests.get(f"https://u.gg/lol/champions/{newArg}/build", headers=headers)
+            response = httpx.get(f"https://u.gg/lol/champions/{newArg}/build", headers=headers)
             soup = BeautifulSoup(response.text, "html.parser")
             try: # grab champ data
                 champImage = soup.find("img", class_="champion-image")

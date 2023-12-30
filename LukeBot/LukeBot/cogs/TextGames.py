@@ -1,4 +1,4 @@
-import bot
+﻿import bot
 import discord
 from discord import app_commands
 from discord.ext import commands
@@ -6,10 +6,14 @@ import random
 import time
 import asyncio
 import os
-import requests
+import httpx
+import json
+from bs4 import BeautifulSoup
 from PIL import Image
 from PIL import ImageFont
 from PIL import ImageDraw
+from PIL import ImageFilter
+from io import BytesIO
 
 class TextGames(commands.Cog):
     def __init__(self, bot):
@@ -119,6 +123,7 @@ class TextGames(commands.Cog):
                 else: #if guess yet entered, keep gray background
                     pass
             grid.save('assets/wordle/grid.png')
+            grid.close()
             return discord.File("assets/wordle/grid.png")
 
         # Set up initial embed below
@@ -132,25 +137,22 @@ class TextGames(commands.Cog):
         
         # load dict of words
         try: 
-            word_site = "https://www.mit.edu/~ecprice/wordlist.10000"
-            response = requests.get(word_site, timeout=.2) # this line fails without timeout ???
+            word_site = "https://gist.githubusercontent.com/scholtes/94f3c0303ba6a7768b47583aff36654d/raw/d9cddf5e16140df9e14f19c2de76a0ef36fd2748/wordle-La.txt"
+            response = httpx.get(word_site, timeout=.2) # this line fails without timeout ???
             WORDS = response.content.splitlines()
         except:
             await ctx.send("Word site failed to load")
             return
 
-        idx = random.randint(0, 9999)
-
-        word = str(WORDS[idx])[2:-1]
+        idx = random.randint(0, len(WORDS) - 1)
 
         randWords = set() # will get answer word as well as 6 words in case user does not enter word within time limit
 
         
         while len(randWords) < 7:  # Keep looping until you have 7 words
-            idx = random.randint(0, 9999)
-            word = str(WORDS[idx])[2:-1]
-            if len(word) == 5 and word not in randWords:
-                randWords.add(word)
+            idx = random.randint(0, len(WORDS) - 1)
+            word = WORDS[idx].decode("ascii")
+            randWords.add(word)
         
 
         ans_word = random.choice(list(randWords)) # 5-letter 'answer' word
@@ -190,5 +192,83 @@ class TextGames(commands.Cog):
         
         os.remove('assets/wordle/grid.png') # delete generated grid image
                 
+
+    @commands.hybrid_command(name="picdle", description="Guess the animal!")
+    async def picdle(self, ctx, difficulty):
+        """Guess cat or dog. Easy, Med, or Hard"""
+        animalOptions = {0: "dog", 1: "cat"}
+        difficulties = {"easy": 10, "med": 20, "hard": 40}
+        update = None
+        firstSend = True
+        timeFlag = False
+        try:
+            selectedDifficulty = difficulties[difficulty.lower()]
+        except:
+            await ctx.send(f"Difficulty {difficulty} not valid.")
+            return
+        
+        while(True):
+            coinflip = random.randint(0,1)
+            if coinflip == 0: # dog
+                response = httpx.get("https://dog.ceo/api/breeds/image/random")
+                image_url = response.json().get("message")
+                response = httpx.get(image_url)
+            elif coinflip == 1:
+                response = httpx.get("https://cataas.com/cat")
+            
+            if response.status_code == 200:
+                animal_embed = discord.Embed(title="Cat or Dog?", description="To guess, type 'cat' or 'dog'. 'end' will end the game.")
+    
+                # Image from URL into bytes to send in discord message
+                image_data = BytesIO(response.content)
+                image = Image.open(image_data)
+                image = image.filter(ImageFilter.BoxBlur(selectedDifficulty))
+                image_data = BytesIO()  # Create a new BytesIO object for saving the image
+
+                image.save(image_data, format='PNG')
+                image_data.seek(0)
+                imageToFile = discord.File(image_data, filename="image.png")
+                
+                animal_embed.set_image(url="attachment://image.png")
+                
+                if firstSend == True:
+                    update = await ctx.send(embed=animal_embed, file=imageToFile)
+                    firstSend = False
+                else:
+                    await update.edit(embed=animal_embed, attachments=[imageToFile])
+
+                # reload image and make it unblurred. this does not update it yet, we will that later after user input
+                image_data = BytesIO(response.content)
+                image = Image.open(image_data)
+                image_data = BytesIO()  # Create a new BytesIO object for saving the image
+                image.save(image_data, format='PNG')
+                image_data.seek(0)
+                imageToFile = discord.File(image_data, filename="image.png")
+            else:
+                await ctx.send("Image not fetched")
+                break
+            
+            # User guess
+            try:
+                user_guess = await self.bot.wait_for("message", timeout=30.0, check = lambda mess: mess.author == ctx.author and (mess.content == 'cat' or mess.content.lower() == 'dog'or mess.content.lower() == 'end'))
+            except asyncio.TimeoutError: # if time out, show unblurred image and end game
+                await ctx.send(f"Time limit for guess exceeded! Answer was: {animalOptions[coinflip]}")
+                await update.edit(embed=animal_embed, attachments=[imageToFile])
+                return
+
+            await update.edit(embed=animal_embed, attachments=[imageToFile]) # update discord embed with unblurred image
+
+            if str(user_guess.content).lower() == animalOptions[coinflip]: # user correct guess
+                await update.add_reaction("✅")
+                await asyncio.sleep(2)
+                await update.remove_reaction(emoji="✅", member=self.bot.user)
+            elif str(user_guess.content).lower() == 'end': # user ends game
+                await ctx.send(f"Game ended. Answer was: {animalOptions[coinflip]}")
+                return
+            else: # user wrong guess
+                await ctx.send(f"Wrong! Answer was: {animalOptions[coinflip]}. Game Over!")
+                return
+
+            
 async def setup(bot):
     await bot.add_cog(TextGames(bot))
