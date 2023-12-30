@@ -6,14 +6,12 @@ from cogs.Media import Media
 from cogs.TextGames import TextGames
 from cogs.music import music
 
-
 def run_discord_bot():
     # TOKEN
     token_file = open("C:/Users/schwa/Desktop/TOKEN.txt", 'r')
     token_txt = token_file.read()
     TOKEN = token_txt
     token_file.close()
-    
 
     intents = discord.Intents.default()
     intents.message_content = True

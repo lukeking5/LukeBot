@@ -131,9 +131,13 @@ class TextGames(commands.Cog):
         update = await ctx.send(embed=wordle_embed, file=gridFile) #store embed message to update embed later
         
         # load dict of words
-        word_site = "https://www.mit.edu/~ecprice/wordlist.10000"
-        response = requests.get(word_site)
-        WORDS = response.content.splitlines()
+        try: 
+            word_site = "https://www.mit.edu/~ecprice/wordlist.10000"
+            response = requests.get(word_site, timeout=.2) # this line fails without timeout ???
+            WORDS = response.content.splitlines()
+        except:
+            await ctx.send("Word site failed to load")
+            return
 
         idx = random.randint(0, 9999)
 
