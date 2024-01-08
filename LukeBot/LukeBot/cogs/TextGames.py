@@ -9,12 +9,14 @@ import asyncio
 import os
 import httpx
 import json
+from selenium import webdriver
 from bs4 import BeautifulSoup
 from PIL import Image
 from PIL import ImageFont
 from PIL import ImageDraw
 from PIL import ImageFilter
 from io import BytesIO
+from databases.databases import cmdToDB
 
 class TextGames(commands.Cog):
     def __init__(self, bot):
@@ -23,6 +25,8 @@ class TextGames(commands.Cog):
     @commands.hybrid_command(name="typerace", description="Create a type racer lobby.")
     async def typeRace(self, ctx): ############ TIME NOT IMPLEMENTED FULLY YET. BOT.WAIT_FOR() PREVENTS TIME FROM INCREMENTING, AS IT WAITS FOR USER INPUT ##################
         """Create a TypeRacer lobby."""
+        cmdToDB(ctx.command.name, str(ctx.guild.id), str(ctx.author.id))
+        
         await ctx.send(f"Please type 'race' to join/leave race. {ctx.author.mention} may begin the race by typing 'start' or cancel by typing 'cancel'")
         userSet = {ctx.author} # set of users currently ready to race
         while(True):
@@ -94,6 +98,8 @@ class TextGames(commands.Cog):
     @commands.hybrid_command(name="wordle",description="Create a wordle game.")
     async def wordle(self, ctx): 
         """Create a wordle game."""
+        cmdToDB(ctx.command.name, str(ctx.guild.id), str(ctx.author.id))
+        
         def createGrid(guesses=None, word=''): # creates and fills grid based on list of user guesses
             if guesses is None:
                 guesses = []
@@ -197,6 +203,7 @@ class TextGames(commands.Cog):
     @commands.hybrid_command(name="picdle", description="Guess the animal!")
     async def picdle(self, ctx, difficulty):
         """Guess cat or dog. Easy, Med, or Hard"""
+        cmdToDB(ctx.command.name, str(ctx.guild.id), str(ctx.author.id), difficulty)
         # Image from URL into bytes to send in discord embed
         def urlToImgFile(response, embed, blur = None):
 
@@ -274,6 +281,8 @@ class TextGames(commands.Cog):
     @commands.hybrid_command(name="ttt", description="challenge another user to tic-tac-toe")
     async def ttt(self, ctx, user: discord.Member):
         """ Challenge another user to Tic-Tac-Toe"""
+        cmdToDB(ctx.command.name, str(ctx.guild.id), str(ctx.author.id), str(user.id), str(user.id))
+        
         def addTurn(firstStart, place=None, letter=None): # creates and fills grid based on list of user placement
             if firstStart == True:
                 grid = Image.open('assets/tictactoe/grid.png') # create image background
@@ -383,14 +392,11 @@ class TextGames(commands.Cog):
         # remove generated png file
         os.remove('assets/tictactoe/gridNEW.png')
             
+    @commands.hybrid_command(name='ub', description='Ultimate Bravery.') # 50000000 col-md-8 col-sm-12
+    async def ultimateBravery(self, ctx):
+        return
 
-            
-                
-                
-        
-        
-        
-    
-    
+
+
 async def setup(bot):
     await bot.add_cog(TextGames(bot))

@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 import discord
 from discord.ext import commands
 from discord import app_commands
-
+from databases.databases import cmdToDB
 
 class Media(commands.Cog):
     def __init__(self, bot):
@@ -15,6 +15,8 @@ class Media(commands.Cog):
     @commands.hybrid_command(name="gif", description="Receive a random gif based on the prompt.")
     async def gif(self, ctx, *, arg):
         """Receive a random gif based on the prompt"""
+        cmdToDB(ctx.command.name, str(ctx.guild.id), str(ctx.author.id), arg)
+        
         arg = arg.replace(' ', '-') # spaces become %20 in image search. ############### LATER SHOULD IMPLEMENT MORE SUCH AS '+' ##############
         gifLinks = []
         
@@ -38,6 +40,8 @@ class Media(commands.Cog):
     @commands.hybrid_command(name="wr", description="Retrieve information about LoL players or champions.")
     async def wr(self, ctx, *, arg):
         """Retrieve information about LoL players or champions."""
+        cmdToDB(ctx.command.name, str(ctx.guild.id), str(ctx.author.id), arg)
+        
         newArg = arg.replace(' ', '') #spaces on u.gg website are removed
 
         headers = { # spoofing browser to webscrape

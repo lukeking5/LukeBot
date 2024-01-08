@@ -25,6 +25,7 @@
     <Compile Include="bot.py" />
     <Compile Include="cogs\CoreCommands.py" />
     <Compile Include="cogs\music.py" />
+    <Compile Include="databases\databases.py" />
     <Compile Include="main.py" />
     <Compile Include="cogs\Media.py" />
     <Compile Include="cogs\TextGames.py" />
@@ -42,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="assets\" />
+    <Folder Include="databases\" />
     <Folder Include="assets\wordle\" />
     <Folder Include="assets\wordle\grids\" />
     <Folder Include="cogs\" />
